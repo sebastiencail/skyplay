@@ -1,10 +1,18 @@
 var express = require('express');
+var bodyParser = require('body-parser');
 const fs = require('fs');
 const ini =  require('ini');
 
 var app = express();
 var repertoireFilm = "";
 var oPlayer = {};
+
+
+app.use(bodyParser.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
+
+// create application/json parser
+var jsonParser = bodyParser.json()
+
 
 //Chargement fichier de configuration
 loadIni();
@@ -15,7 +23,7 @@ app.get('/films', function (req, resReq) {
 });
 
 //Player
-app.get('/player/:action', function (req, resReq) {
+app.post('/player',jsonParser,  function (req, resReq) {
     actionPlayer(req, resReq);
 })
 app.use(function(req, res, next){
@@ -54,9 +62,14 @@ function loadIni () {
 }
 
 function actionPlayer(req, resReq){
-    switch (req.params.action) {
+    objAction = req.body;
+
+    console.log(objAction);
+    
+    switch (objAction.action) {
         //Lecture
         case 'play':
+            console.log("Film --> " + objAction.film);
             resReq.status(200).send(('player play'));;
             break;
 
@@ -78,4 +91,4 @@ function actionPlayer(req, resReq){
     resReq.end();
 }
 
-app.listen(8080);
+app.listen(8000);
